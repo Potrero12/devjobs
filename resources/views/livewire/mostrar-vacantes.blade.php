@@ -16,13 +16,13 @@
                             Candidatos
                         </a>
                         
-                        <a href="#" class="bg-blue-800 py-2 px-4 rounded-lg text-white text-xs font-bold uppercase">
+                        <a href="{{ route('vacantes.edit', $vacante->id) }}" class="bg-blue-800 py-2 px-4 rounded-lg text-white text-xs font-bold uppercase">
                             Editar
                         </a>
                         
-                        <a href="#" class="bg-red-600 py-2 px-4 rounded-lg text-white text-xs font-bold uppercase">
+                        <button wire:click="$dispatch('mostrarAlerta', {{ $vacante->id }})" class="bg-red-600 py-2 px-4 rounded-lg text-white text-xs font-bold uppercase">
                             Eliminar
-                        </a>
+                        </button>
                     </div>
                 </div>
             @empty
@@ -35,3 +35,35 @@
         {{ $vacantes->links() }}
     </div>
 </div>
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener('livewire:initialized', () => {
+
+            Livewire.on('mostrarAlerta', (vacanteId) => {
+                Swal.fire({
+                title: '¿Eliminar Vacante?',
+                text: "una vacante eliminada no se puede recuperar",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si, Eliminar!',
+                cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                if (result.isConfirmed) {
+                    // eliminar la vacante desd el servidor
+                    Livewire.dispatch('eliminarVacante', {vacante: vacanteId})
+                    Swal.fire(
+                    'Eliminado!',
+                    'La vacante ha sido eliminada',
+                    'success'
+                    )
+                }
+                })
+            })
+        })
+    </script>
+@endpush
